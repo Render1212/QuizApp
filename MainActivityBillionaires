@@ -1,0 +1,179 @@
+package com.bachosz.billionaires;
+
+import android.support.v7.app.ActionBarActivity;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.StringTokenizer;
+import android.content.ContextWrapper;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
+	public class MainActivityBillionaires extends ActionBarActivity {
+
+		private int currentQuestion;
+		private Button answerButton;
+		private Button questionButton;
+		private TextView questionView;
+		private TextView answerView;
+		private EditText answerText; 
+		private Question [] questions;
+		private Button buttonA;
+		private Button buttonB;
+		private Button buttonC;
+		private Button buttonD;
+
+ 
+		
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main_activity_billionaires);
+		
+      
+      try {
+		init();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    }  
+  
+	
+	public void init() throws IOException
+	    {
+
+	    	questions = new Question[2]; //just to try the number is 2
+	    	currentQuestion = 0;
+	   
+	    	InputStream inputStream = getAssets().open("questionstable.txt");
+	    	//InputStream inputStream = getResources().openRawResource(R.raw.questionstable);
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+	    	String line = reader.readLine();
+	    	//questionView.setText(encoded);
+	    	  String content,a,b,c,d,correct;
+		        int id, x = 0;
+		        StringTokenizer st = null;
+	    	while ((line=reader.readLine()) != null)
+	    	{
+	    		 st= new StringTokenizer(line, ",");
+	                id = Integer.parseInt(st.nextToken());
+	                content = st.nextToken();
+	                a = st.nextToken();
+	                b = st.nextToken();
+	                c = st.nextToken();
+	                d = st.nextToken();
+	                correct = st.nextToken();
+	                
+	                questions[x] = new Question(id, content, a, b, c, d, correct);
+	                x++;
+	                return;
+	    	}
+	    	
+	    	reader.close();
+	   
+
+
+	    answerButton = (Button)findViewById(R.id.AnswerButton);
+	    questionButton = (Button)findViewById(R.id.QuestionButton);
+	    questionView = (TextView)findViewById(R.id.QuestionTextView);
+	    answerView = (TextView) findViewById(R.id.AnswerTextView);
+	    answerText = (EditText) findViewById(R.id.AnswerText);
+	    buttonA = (Button)findViewById(R.id.buttonA);
+	    buttonB = (Button)findViewById(R.id.buttonB);
+	    buttonC = (Button)findViewById(R.id.buttonC);
+	    buttonD = (Button)findViewById(R.id.buttonD);
+	    questionView.setText(questions[0].getContent());
+	 
+	    buttonA.setOnClickListener(new OnClickListener(){
+	    	public void onClick(View v){
+	    		
+	    		checkAnswer(questions[currentQuestion].getA());
+	    	}
+	    	});
+	    buttonB.setOnClickListener(new OnClickListener(){
+	    	public void onClick(View v){
+	    		checkAnswer(questions[currentQuestion].getB());
+	    	}
+	    	});
+	    
+	    buttonC.setOnClickListener(new OnClickListener(){
+	    	public void onClick(View v){
+	    		checkAnswer(questions[currentQuestion].getC());
+	    	}
+	    	});
+	    
+	    buttonD.setOnClickListener(new OnClickListener(){
+	    	public void onClick(View v){
+	    		checkAnswer(questions[currentQuestion].getD());
+	    	}
+	    	});
+	    
+	    
+	    
+	    
+	    
+	    questionButton.setOnClickListener(new OnClickListener(){
+	   @Override
+	   public void onClick(View v) {
+	   showQuestion();
+	   }});}
+
+	    public void showQuestion()
+	    {
+	  // if(currentQuestion == questions.length)
+	   // currentQuestion =0;	   
+	   questionView.setText(questions[currentQuestion].toString());
+	    answerView.setText("");
+	    answerText.setText("");
+	    currentQuestion++;
+	    
+	    }
+
+	    public void checkAnswer(String yourAnswer)
+	    {
+	    
+	    if(yourAnswer==questions[currentQuestion].getCorrect())
+	    answerView.setText("You're right!");
+	    else
+	    answerView.setText("Sorry, the correct answer is"+ questions[currentQuestion].getCorrect());
+	    
+	    }
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main_activity_billionaires, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+}
